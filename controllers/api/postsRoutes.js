@@ -33,17 +33,15 @@ router.get("/", async (req, res) => {
               "maxDate",
             ],
           ],
-          order: [["comments.maxDate", "ASC"]], // not working
+          order: [["comments.maxDate", "ASC"]],
         },
       ],
     });
 
-    // ensure data was found
     if (!rawPostData) {
       res.status(404).json({ message: "No posts found." });
     }
-
-    // serialize the posts
+    // this is for serializing the post
     const postData = rawPostData.map((post) => post.get({ plain: true }));
 
     res.status(200).json(postData);
@@ -54,7 +52,6 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/dashboard", async (req, res) => {
-  // console.log("dashboard");
   try {
     const userId = 1; // req.session.user_id;
     const rawPostData = await Post.findAll({
