@@ -1,9 +1,6 @@
 const router = require("express").Router();
 const { User } = require("../../models");
 
-//base url: http://localhost:8080/api +
-
-//create new user
 router.post("/", async (req, res) => {
   try {
     const newUser = await User.create(req.body);
@@ -23,17 +20,15 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Log user in
+// log in for post route
 router.post("/login", async (req, res) => {
   try {
-    // get the user from the db
     const userData = await User.findOne({
       where: {
         name: req.body.name,
       },
     });
 
-    // if no user found - return 400
     if (!userData) {
       res
         .status(400)
@@ -41,10 +36,9 @@ router.post("/login", async (req, res) => {
       return;
     }
 
-    // if found validate password
+    // if not logged in give 400 err
     const validPwd = await userData.checkPassword(req.body.password);
 
-    // if password is not valid return 400 bad password
     if (!validPwd) {
       res
         .status(400)
@@ -52,7 +46,7 @@ router.post("/login", async (req, res) => {
       return;
     }
 
-    // if valid - set up session and save as logged in
+    // if you were able to login give 200 ok
     req.session.save(() => {
       req.session.user_id = userData.id;
       req.session.loggedIn = true;
@@ -68,7 +62,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Logout
+// created this for logging out
 router.post("/logout", (req, res) => {
   if (req.session.loggedIn) {
     req.session.destroy(() => {

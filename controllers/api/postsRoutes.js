@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const { User, Post, Comment } = require("../../models");
 const Sequelize = require("sequelize");
-const { sequelize } = require("../../models/users");
 
 router.get("/", async (req, res) => {
   try {
@@ -26,10 +25,10 @@ router.get("/", async (req, res) => {
             "created_at",
             "updated_at",
             [
-              sequelize.fn(
+              Sequelize.fn(
                 "ifitsnull",
-                sequelize.col("comments.updated_at"),
-                sequelize.col("comments.created_at")
+                Sequelize.col("comments.updated_at"),
+                Sequelize.col("comments.created_at")
               ),
               "maxDate",
             ],
@@ -57,7 +56,7 @@ router.get("/", async (req, res) => {
 router.get("/dashboard", async (req, res) => {
   // console.log("dashboard");
   try {
-    const userId = 3; // req.session.user_id;
+    const userId = 1; // req.session.user_id;
     const rawPostData = await Post.findAll({
       where: { user_id: userId },
       include: [
@@ -78,10 +77,10 @@ router.get("/dashboard", async (req, res) => {
             "created_at",
             "updated_at",
             [
-              sequelize.fn(
+              Sequelize.fn(
                 "ifitsnull",
-                sequelize.col("comments.updated_at"),
-                sequelize.col("comments.created_at")
+                Sequelize.col("comments.updated_at"),
+                Sequelize.col("comments.created_at")
               ),
               "maxDate",
             ],
@@ -91,10 +90,71 @@ router.get("/dashboard", async (req, res) => {
       ],
     });
 
-    // serialize the posts
     const postData = rawPostData.map((post) => post.get({ plain: true }));
 
     res.status(200).json(postData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+router.post("/addComment", async (req, res) => {
+  try {
+    const body = req.body;
+    body.user_id = req.session.user_id;
+
+    console.log(body);
+
+    const newComment = await Comment.create(body);
+
+    res.status(200).json(newComment);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+router.post("/addPost", async (req, res) => {
+  try {
+    let newPost;
+    const body = req.body;
+    body.user_id = req.session.user_id;
+
+    console.log(body);
+
+    if (body.id) {
+      newPost = await Post.update(
+        {
+          title: body.title,
+          content: body.content,
+          updated_at: Date.now(),
+        },
+        {
+          where: {
+            id: body.id,
+          },
+        }
+      );
+    } else {
+      newPost = await Post.create(body);
+    }
+
+    res.status(200).json(newPost);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    if (req.params.id) {
+      const deletedPost = await Post.destroy({
+        where: { id: req.params.id },
+      });
+      res.status(200).json(deletedPost);
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
