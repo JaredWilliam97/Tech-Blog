@@ -1,13 +1,11 @@
 const router = require("express").Router();
-const withAuth = require("../utils/auth");
-const { sequelize } = require("../models/users");
-const { User, Post, Comment } = require("../models");
+const { User, Post, Comment } = require("../../models");
+const Sequelize = require("sequelize");
+const { sequelize } = require("../../models/users");
 
-//base url: http://localhost:8080/ +
-
-// display home page
 router.get("/", async (req, res) => {
   try {
+    // const Op = Sequelize.Op;
     // get the posts (if any) - these display regardless of login status
     const rawPostData = await Post.findAll({
       include: [
@@ -36,7 +34,7 @@ router.get("/", async (req, res) => {
               "maxDate",
             ],
           ],
-          order: ["maxDate", "DESC"],
+          order: [["comments.maxDate", "ASC"]], // not working
         },
       ],
     });
@@ -49,48 +47,18 @@ router.get("/", async (req, res) => {
     // serialize the posts
     const postData = rawPostData.map((post) => post.get({ plain: true }));
 
-    // console.log(postData);
-
-    // render home page - submit session.loggedIn status for page
-    res.render("homepage", {
-      style: "postDetails.css",
-      posts: postData,
-      loggedIn: req.session.loggedIn,
-    });
+    res.status(200).json(postData);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
   }
 });
 
-router.get("/login", (req, res) => {
-  if (req.session.loggedIn) {
-    res.redirect("/");
-    return;
-  }
-
-  res.render("login", {
-    style: "login.css",
-  });
-});
-
-router.get("/createUser", (req, res) => {
-  if (req.session.loggedIn) {
-    res.redirect("/");
-    return;
-  }
-
-  res.render("createUser", {
-    style: "createUser.css",
-  });
-});
-
-router.get("/dashboard", withAuth, async (req, res) => {
+router.get("/dashboard", async (req, res) => {
   // console.log("dashboard");
   try {
-    const userId = req.session.user_id;
-
-    const rawPostsData = await Post.findAll({
+    const userId = 3; // req.session.user_id;
+    const rawPostData = await Post.findAll({
       where: { user_id: userId },
       include: [
         {
@@ -123,27 +91,14 @@ router.get("/dashboard", withAuth, async (req, res) => {
       ],
     });
 
-    console.log("rawPostsData:", rawPostsData);
-    // if(!rawPostsData) {
-    //   res.status(404).json({message: "No posts found!"})
-    // }
-    const postData = await rawPostsData.map((post) =>
-      post.get({ plain: true })
-    );
+    // serialize the posts
+    const postData = rawPostData.map((post) => post.get({ plain: true }));
 
-    postData.forEach((post) => (post.showEdit = true));
-
-    console.log(postData);
-
-    res.render("dashboard", {
-      style: "postDetails.css",
-      posts: postData,
-      loggedIn: req.session.loggedIn,
-      showEdit: true,
-    });
+    res.status(200).json(postData);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
   }
 });
+
 module.exports = router;
