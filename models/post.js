@@ -22,6 +22,18 @@ Post.init(
       allowNull: true,
     },
     // created the date --
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    },
+
     user_id: {
       type: DataTypes.INTEGER,
       references: {
@@ -33,8 +45,8 @@ Post.init(
   {
     sequelize,
     underscored: true,
-    timestamps: true, // ensure timestamps exist
-    mode: "post",
+    timestamps: false, // not necessary since I am handling this manually
+    modelName: "post",
   }
 );
 
