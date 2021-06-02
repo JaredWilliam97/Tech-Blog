@@ -19,9 +19,9 @@ Post.init(
     },
     content: {
       type: DataTypes.STRING,
-      allowNull: true, // they can enter only a title
+      allowNull: true,
     },
-    // date_created: {}, -- let timestamp deal with this as createAt/updatedAt
+    // created the date --
     user_id: {
       type: DataTypes.INTEGER,
       references: {
