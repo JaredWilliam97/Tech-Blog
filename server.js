@@ -1,7 +1,9 @@
 // bring in modules needed
 const express = require("express");
 const path = require("path");
-
+const session = require("express-session");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const exphbs = require("express-handlebars");
 // configure modules
 const sequelize = require("./config/connection");
 const routes = require("./controllers");
