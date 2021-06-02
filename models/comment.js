@@ -1,8 +1,9 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection");
+// created my variables for data types and require
 
 class Comment extends Model {}
-
+// created my table for comment
 Comment.init(
   {
     id: {
@@ -22,6 +23,7 @@ Comment.init(
     },
     updated_at: {
       type: DataTypes.DATE,
+
       allowNull: true,
       defaultValue: null,
     },
@@ -47,5 +49,20 @@ Comment.init(
     modelName: "comment",
   }
 );
-
+// module exports
 module.exports = Comment;
+
+/* User.hasMany(Comment, {
+foreignKey: "user_id",
+onDelete: "CASCADE",
+}
+
+Comment.belongsTo(User);
+
+Post.hasMany(Comment, {
+foreignKey: "post_id",
+onDelete: "CASCADE",
+
+})
+Comment.belongsTo(Post);
+*/
