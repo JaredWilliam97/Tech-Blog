@@ -13,7 +13,7 @@ const users = [
 
 const seedUsers = () =>
   User.bulkCreate(users, {
-    individualHooks: true, // causes the beforeCreate to update even in the bulkCreate
+    individualHooks: true,
   });
 
 module.exports = seedUsers;
