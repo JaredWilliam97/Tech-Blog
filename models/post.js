@@ -2,7 +2,7 @@ const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection");
 
 class Post extends Model {
-  // add encryption
+  // adding the encryption
 }
 
 Post.init(
@@ -21,7 +21,7 @@ Post.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    // created the date --
+
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -45,7 +45,7 @@ Post.init(
   {
     sequelize,
     underscored: true,
-    timestamps: false, // not necessary since I am handling this manually
+    timestamps: false,
     modelName: "post",
   }
 );
