@@ -1,14 +1,11 @@
 const router = require("express").Router();
 const withAuth = require("../utils/auth");
-const { sequelize } = require("../models/users");
+const { sequelize } = require("../models/user");
 const { User, Post, Comment } = require("../models");
 
-//base url: http://localhost:8080/ +
-
-// display home page
+// this will make the home page be displayed
 router.get("/", async (req, res) => {
   try {
-    // get the posts (if any) - these display regardless of login status
     const rawPostData = await Post.findAll({
       include: [
         {
@@ -40,18 +37,13 @@ router.get("/", async (req, res) => {
         },
       ],
     });
-
-    // ensure data was found
+    d;
     if (!rawPostData) {
       res.status(404).json({ message: "No posts found." });
     }
 
-    // serialize the posts
     const postData = rawPostData.map((post) => post.get({ plain: true }));
 
-    // console.log(postData);
-
-    // render home page - submit session.loggedIn status for page
     res.render("homepage", {
       style: "postDetails.css",
       posts: postData,
@@ -86,7 +78,6 @@ router.get("/createUser", (req, res) => {
 });
 
 router.get("/dashboard", withAuth, async (req, res) => {
-  // console.log("dashboard");
   try {
     const userId = req.session.user_id;
 
