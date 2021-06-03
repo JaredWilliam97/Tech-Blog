@@ -1,5 +1,5 @@
 const { Post } = require("../models");
-const { update } = require("../models/users");
+const { update } = require("../models/user");
 const postData = [
   {
     // the titles for postSeed
